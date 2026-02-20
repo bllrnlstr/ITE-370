@@ -8,16 +8,12 @@ import logging
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
-# ─────────────────────────────────────────
-# ENVIRONMENT CONFIGURATION (.env)
-# ─────────────────────────────────────────
-load_dotenv()
+
+load_dotenv)
 SECRET_KEY = os.getenv("SECRET_KEY", "default-secret-key-change-me")
 DB_NAME    = os.getenv("DB_NAME", "users.json")
 
-# ─────────────────────────────────────────
-# LOGGING SETUP
-# ─────────────────────────────────────────
+
 logging.basicConfig(
     filename="app.log",
     level=logging.INFO,
@@ -28,9 +24,7 @@ def log(msg, level="info"):
     print(f"[LOG] {msg}")
     getattr(logging, level)(msg)
 
-# ─────────────────────────────────────────
-# DATABASE (Simulated with JSON file)
-# ─────────────────────────────────────────
+
 def load_db():
     if os.path.exists(DB_NAME):
         with open(DB_NAME, "r") as f:
@@ -41,9 +35,6 @@ def save_db(db):
     with open(DB_NAME, "w") as f:
         json.dump(db, f, indent=2)
 
-# ─────────────────────────────────────────
-# AUTHENTICATION — Password Hashing
-# ─────────────────────────────────────────
 def hash_password(password: str) -> str:
     """Hash password using SHA-256 with a salt."""
     salt = secrets.token_hex(16)
@@ -58,9 +49,9 @@ def verify_password(password: str, stored: str) -> bool:
     except Exception:
         return False
 
-# ─────────────────────────────────────────
-# INPUT VALIDATION & SANITIZATION
-# ─────────────────────────────────────────
+
+# INPUT VALIDATION & SANITIZATIONl
+
 def validate_username(username: str) -> bool:
     """Allow only alphanumeric usernames, 3-20 characters."""
     return bool(re.match(r'^[a-zA-Z0-9_]{3,20}$', username))
@@ -79,17 +70,15 @@ def sanitize_input(text: str) -> str:
     """Remove potentially dangerous characters."""
     return re.sub(r'[<>\'\";\\/]', '', text).strip()
 
-# ─────────────────────────────────────────
-# ERROR HANDLING
-# ─────────────────────────────────────────
+
 def safe_error(msg: str) -> str:
     """Return a generic error message to the user (never expose internals)."""
     log(f"Error occurred: {msg}", level="error")
     return "An error occurred. Please try again."
 
-# ─────────────────────────────────────────
-# SESSION MANAGEMENT — Token Generation & Expiry
-# ─────────────────────────────────────────
+
+# SESSION 
+
 SESSION_TIMEOUT_MINUTES = 30
 
 def create_session(username: str, db: dict) -> str:
@@ -121,9 +110,9 @@ def delete_session(token: str, db: dict):
         save_db(db)
         log(f"Session deleted for user: {user}")
 
-# ─────────────────────────────────────────
-# BRUTE FORCE PROTECTION — Login Attempt Limiting
-# ─────────────────────────────────────────
+
+#  Login Attempt Limiting
+
 MAX_ATTEMPTS = 5
 LOCKOUT_MINUTES = 15
 
@@ -161,10 +150,7 @@ def clear_attempts(username: str, db: dict):
     """Clear failed attempts on successful login."""
     db["login_attempts"].pop(username, None)
     save_db(db)
-
-# ─────────────────────────────────────────
-# CORE FUNCTIONS — Register & Login
-# ─────────────────────────────────────────
+    
 def register(db: dict):
     print("\n--- REGISTER ---")
     username = sanitize_input(input("  Username: "))
@@ -218,9 +204,6 @@ def dashboard(token: str, db: dict):
     print(f"\n  Welcome to your dashboard, {username}!")
     print(f"  Your data is protected with hashed passwords and session tokens.")
 
-# ─────────────────────────────────────────
-# SECURE FILE DELETION
-# ─────────────────────────────────────────
 def secure_delete(filepath: str, passes: int = 3):
     """Overwrite file with random bytes before deleting."""
     if not os.path.exists(filepath):
@@ -235,9 +218,7 @@ def secure_delete(filepath: str, passes: int = 3):
     log(f"Secure delete performed on: {filepath}")
     print(f"  '{filepath}' securely deleted ({passes} overwrite passes).")
 
-# ─────────────────────────────────────────
-# MAIN MENU
-# ─────────────────────────────────────────
+
 def main():
     print("=" * 45)
     print("   ITE 370 - Secure Python Application")
